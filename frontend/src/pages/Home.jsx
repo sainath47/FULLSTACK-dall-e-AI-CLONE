@@ -1,56 +1,15 @@
 import React, { useState, useEffect } from "react";
+//bugs the display of pictures in commuity is not accurate & fancy
+/*
+how he was able to work one single image
+similarly you also do it
+names are not visble properly 
+bit glitchy in design
 
+//search is also not working
+//go on with the firbase authentication implimentation
+**/
 import { Card, FormField, Loader } from "../components";
-
-
-const Home = () => {
-  const [loading, setLoading] = useState(false);
-  const [allPosts, setAllPosts] = useState(null);
-  const [searchText, setSearchText] = useState("abc");
-const [searchedResults, setSearchedResults] = useState(null)
-const [searchTimeout, setSearchTimeout] = useState(null)
-  
-
-useEffect(() => {
-  const fetchPosts = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch("http://localhost:8080/api/v1/post", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-
-        setAllPosts(result.data.reverse()); //we are reversing it , since we want to show the newest post at top
-      }
-    } catch (error) {
-      alert(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchPosts();
-}, []);
-
-const handleSearchChange = (e) => {
-  setSearchText(e.target.value);
-setSearchTimeout(
-  setTimeout(() => {
-    const searchResults = allPosts.filter(
-      (item) =>
-        item.name.toLowerCase().includes(searchText.toLowerCase()) ||
-        item.propt.toLowerCase().includes(searchText.toLowerCase())
-    );
-    setSearchedResults(searchResults)
-  }, 500)
-)
-};
-
 const RenderCards = ({ data, title }) => {
   if (data?.length > 0)
     return data.map((post) => <Card key={post._id} {...post} />);
@@ -59,6 +18,56 @@ const RenderCards = ({ data, title }) => {
     <h2 className="mt-5 font-bold text-blue-500 text-xl uppercase">{title}</h2>
   );
 };
+
+const Home = () => {
+  const [loading, setLoading] = useState(false);
+  const [allPosts, setAllPosts] = useState(null);
+
+  const [searchText, setSearchText] = useState("");
+const [searchedResults, setSearchedResults] = useState(null)
+const [searchTimeout, setSearchTimeout] = useState(null)
+  
+const fetchPosts = async () => {
+  setLoading(true);
+  try {
+    const response = await fetch("http://localhost:8080/api/v1/post", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+
+      setAllPosts(result.data.reverse()); //we are reversing it , since we want to show the newest post at top
+    }
+  } catch (error) {
+    alert(error);
+  } finally {
+    setLoading(false);
+  }
+};
+useEffect(() => {
+  fetchPosts();
+}, []);
+
+const handleSearchChange = (e) => {
+  clearTimeout(searchTimeout)
+  setSearchText(e.target.value);
+setSearchTimeout(
+  setTimeout(() => {
+    const searchResults = allPosts.filter(
+      (item) =>
+        item.name.toLowerCase().includes(searchText.toLowerCase()) ||
+        item.prompt.toLowerCase().includes(searchText.toLowerCase())
+    );
+    setSearchedResults(searchResults)
+  }, 500)
+)
+};
+
+
 
   return (
     <section className="max-w-7xl mx-auto">
@@ -86,7 +95,7 @@ const RenderCards = ({ data, title }) => {
       <div className="mt-10">
         {loading ? (
           <div className="flex justify-center items-center">
-            <Loader />{" "}
+            <Loader />
           </div>
         ) : (
           <>
@@ -98,9 +107,9 @@ const RenderCards = ({ data, title }) => {
             )}
             <div className="grid lg:grid-cols-4 sm:grid-col-3 xs:grid-cols-2 grid-cols-1 gap-3">
               {searchText ? (
-                <RenderCards data={searchedResults} title="No posts found" />
+                <RenderCards data={searchedResults} title="No Search Results found" />
               ) : (
-                <RenderCards data={allPosts} title="No posts found" />
+                <RenderCards data={allPosts} title="No posts yet" />
               )}
             </div>
           </>
