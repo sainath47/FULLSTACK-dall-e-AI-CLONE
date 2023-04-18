@@ -12,7 +12,7 @@ dall-e-AI => Is a AI image generator
 
 
 
-So for executing this project in your local server, you have to 
+### So for executing this project in your local server, you have to 
 - get into backend & frontend folder 
 - & execute npm run dev in frontend & npm start in backend respectively
 - as the server start , you can open browser & then go for frontend localhost
